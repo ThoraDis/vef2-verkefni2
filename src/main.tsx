@@ -92,7 +92,7 @@ app.post("/update/:id",async (c) => {
    const update={
     id: id,
     title:String(todoItem.title),
-    finished:false
+    finished:todoItem.finished===true
 
   }
 
@@ -101,12 +101,22 @@ app.post("/update/:id",async (c) => {
     
   }
 
-
   if(body.finished!==undefined){
     update.finished=body.finished==='true'
-  } else{
-    update.finished=todoItem.finished===true
+  }
 
+  const result = TodoItemSchema.safeParse({
+      title: update.title,
+      finished: update.finished});
+
+  if(!result.success){
+    console.error(z.flattenError(result.error));
+    return c.html(
+      <ErrorPage>
+        <p>Titill ekki rétt formataður!</p>
+      </ErrorPage>,
+      400,
+    );
   }
 
   const dbResult = await updateTodo(update.id,update.title,update.finished);

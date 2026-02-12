@@ -66,6 +66,10 @@ app.post("/update/:id", async (c) => {
     else {
         update.finished = todoItem.finished === true;
     }
+    TodoItemSchema.safeParse({
+        title: update.title,
+        finished: update.finished
+    });
     const dbResult = await updateTodo(update.id, update.title, update.finished);
     if (!dbResult) {
         return c.html(_jsx(ErrorPage, { children: _jsx("p", { children: "Ekki h\u00E6gt a\u00F0 uppf\u00E6ra!" }) }), 500);
